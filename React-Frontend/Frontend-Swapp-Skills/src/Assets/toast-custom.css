@@ -1,0 +1,7 @@
+.toast-error-message{
+    background-color: white;
+    font-size: medium;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #5b6d92;
+    border-radius: 5px;
+}
