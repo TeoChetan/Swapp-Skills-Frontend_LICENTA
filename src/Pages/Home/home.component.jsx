@@ -16,21 +16,30 @@ import SkillImage3 from "../../Assets/skill3.jpg";
 import TextImage from "../../Components/textImage.component";
 import topScroll from "../../Components/topScroll.function";
 import LinkCustom from "../../Components/linkCustom.component";
+import FooterSocialComponent from "../../Layouts/footerSocials.component";
 
 const Home = () => {
   return (
     <Fragment>
       <div className="homepage pt-4 home-links-container flex justify-between ">
-        <Link className="logo-container " to="/">
-          <HomeLogo className="logo ml-2"></HomeLogo>
+        <Link className="logo-container flex " to="/">
+          <HomeLogo className="logo ml-4"></HomeLogo>
+          <h1 className="text-xl font-bold text-gray-800 font-montserrat m-2">
+            Swapp Skills
+          </h1>
         </Link>
 
         <div className="flex">
-          <LinkCustom className="login-link m-2" to="/signin" text="Login">
-            
-          </LinkCustom>
-          <LinkCustom className="singup-link m-2" to="/signup" text="Sign-Up">
-          </LinkCustom>
+          <LinkCustom
+            className="login-link m-2"
+            to="/signin"
+            text="Login"
+          ></LinkCustom>
+          <LinkCustom
+            className="singup-link m-2"
+            to="/signup"
+            text="Sign-Up"
+          ></LinkCustom>
         </div>
       </div>
 
@@ -47,8 +56,8 @@ const Home = () => {
       </div>
 
       <div className="content bg-polar-sky">
-        <div className="contentBlock flex flex-col lg:flex-row bg-blue-nova text-white mt-40">
-          <div className="imageWrapper flex-1 ">  
+        <div className="contentBlock flex flex-col lg:flex-row bg-blue-navy text-white mt-40">
+          <div className="imageWrapper flex-1 ">
             <img
               className="w-full h-full"
               src={StudyPic}
@@ -69,7 +78,7 @@ const Home = () => {
         <div className="flex justify-center">
           <hr className="bg-blue-nova h-0.5 w-1/2 mt-4"></hr>
         </div>
-        <h1 className="text-center font-montserrat sm:text-3xl pt-20 m-10">
+        <h1 className="text-center font-montserrat sm:text-3xl pt-20 m-10 font-bold">
           How It Works
         </h1>
 
@@ -98,14 +107,13 @@ const Home = () => {
           onClick={topScroll}
           className="text-blue-nova hover:text-gray-900 border border-blue-nova focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
           to="/"
-        >Home</button>
-        <LinkCustom className="p-2" to="/login" text="Sign-Up">
-          
-        </LinkCustom>
-        <LinkCustom className="p-2" to="/signup" text="Login">
-          
-        </LinkCustom>
+        >
+          Home
+        </button>
+        <LinkCustom className="p-2" to="/login" text="Sign-Up"></LinkCustom>
+        <LinkCustom className="p-2" to="/signup" text="Login"></LinkCustom>
       </div>
+      <FooterSocialComponent />
     </Fragment>
   );
 };

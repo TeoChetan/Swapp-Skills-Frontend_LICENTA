@@ -6,7 +6,7 @@ import {
 } from "../../utils/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import Button from "../../Components/button.component";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { reload, sendEmailVerification } from "firebase/auth";
 import { Spinner } from "../../Components/spinner.component";
 import { toast, ToastContainer } from "react-toastify";
@@ -28,6 +28,8 @@ const SignUpForm = () => {
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
+  let navigate = useNavigate();
+
 
   const signUpUser = async (email, password, displayName) => {
     try {
@@ -54,6 +56,7 @@ const SignUpForm = () => {
             setIsSendingEmailVerificationSent(false);
             await createUserDocumentFromAuth(user, { displayName });
             resetFormFields();
+            navigate("/signin")
             }catch(error){
               console.error("Failed to create user Document")
             }

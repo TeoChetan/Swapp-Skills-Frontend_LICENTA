@@ -4,14 +4,41 @@ import WelcomeAboardPic from "../../Assets/WelcomeAboardPic4.jpg";
 import Dropdown from "../../Components/dropdown.component";
 import MapComponent from "../../Components/map.component";
 import { CalendarComponent } from "../../Components/calendar.component";
+import { getAuth } from "firebase/auth";
+import { toast,ToastContainer } from "react-toastify";
+import { fetchCsrfToken, useCSRFToken} from "../../utils/firebase.utils";
+import { useNavigate } from "react-router-dom";
+import ReverseGeocodingData from "../../Components/reverseGeocoding.function";
 
 const MultiStepContainer = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [location, setLocation] = useState();
+  const [location, setLocation] = useState({ lat: null, lng: null });
+  const [description, setDescription] = useState();
+  const [fullName, setFullName] = useState("");
+  const [skillOwned, setSkillOwned] = useState([]);
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const csrfToken = useCSRFToken();
 
-  const handleLocationSelect = (selectedLocation) => {
-    setLocation(selectedLocation);
+  const handleLocationSelect = async(selectedLocation) => {
+    const locationName = await ReverseGeocodingData(selectedLocation.lat,selectedLocation.lng);
+    setLocation({
+      lat: selectedLocation.lat,
+      lng: selectedLocation.lng,   
+      name:locationName
+    });
   };
+
+  const [imageUrl, setImageUrl] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+ // const formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0]
+  const auth = getAuth();
+  const userId = auth.currentUser ? auth.currentUser.uid : null;
+  // console.log("1"+userId)
+
+
+
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -33,10 +60,123 @@ const MultiStepContainer = () => {
     "German Teacher",
   ];
 
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0]
+    const userData = {
+      uid: userId,
+      fullName: fullName,
+      skillOwned: skillOwned,
+      location: location,
+      description: description,
+      profilePictureUrl: imageUrl,
+      dateOfBirth: formattedDateOfBirth,
+    };
+    
+
+    if (!fullName || !skillOwned || !description || !dateOfBirth) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:8080/dashboard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify(userData),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit user details');
+      }
+      const result = await response.json();
+      console.log("Submitted user details:", result);
+    } catch (error) {
+      console.error("Error submitting user details:", error);
+      toast.error("Failed to submit user details. Please try again.");
+    }
+
+    let uploadedImageUrl = null;
+
+    if (file) {
+      try {
+        uploadedImageUrl = await handleFileUpload(file);
+        console.log(uploadedImageUrl);
+        if (uploadedImageUrl) {
+          console.log("Image uploaded successfully:", uploadedImageUrl);
+          userData.profilePictureUrl = uploadedImageUrl;
+          setImageUrl(uploadedImageUrl);
+          
+        }
+      } catch (error) {
+        console.error("Upload fail", error);
+      //  toast.error("Failed to upload image. Please try .");
+        return;
+      }
+    }
+//for testing
+    const fullUserData = {
+      ...userData,
+      profilePictureUrl: uploadedImageUrl 
+    };
+
+    console.log(fullUserData);
+
+    navigate('/swapp-skills', { state: { userData: fullUserData } });
+
+
+  };
+//ends here
+
+  const handleFileUpload = async (file) => {
+    const userId = auth.currentUser ? auth.currentUser.uid : null;
+    const formData = new FormData();
+    console.log("us"+userId)
+    formData.append("image", file); 
+    formData.append("uid", userId);  
+ 
+    try {
+      const response = await fetch('http://localhost:8080/upload', {
+        method: 'POST',
+          headers: {
+          "X-CSRF-TOKEN": csrfToken,
+          
+        },
+        credentials: 'include',
+        body: formData,
+     
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to upload file');
+      }
+  
+      const imageUrl = await response.text();  
+      setImageUrl(imageUrl);
+      console.log('File uploaded:', imageUrl);
+      return imageUrl;
+  
+    } catch (error) {
+      console.error("Error during file upload:", error);
+      toast.error("Failed to upload image. Please try again.");
+
+      return ;
+    }
+  };
+
   switch (step) {
     case 1:
       return (
-        <div className="flex justify-center items-center m-4">
+        <div className="flex justify-center items-center min-h-screen bg-[#00152c]">
+        <ToastContainer />
           <div className="relative bg-blue-nova text-white rounded-lg shadow-lg max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
             <img
               src={WelcomeAboardPic}
@@ -70,10 +210,10 @@ const MultiStepContainer = () => {
       );
     case 2:
       return (
-        <div className="flex flex-col justify-center items-center min-h-screen bg-polar-sky text-gray-600">
+        <div className="flex flex-col justify-center items-center  min-h-screen bg-[#00152c] text-gray-900">
           <form
-            onSubmit={nextStep}
-            className="w-full max-w-4xl p-6 bg-white bg-opacity-75 rounded-lg shadow-lg space-y-6"
+            onSubmit={handleSubmit}
+            className="w-full max-w-4xl p-6 bg-white bg-opacity-100 rounded-lg shadow-lg space-y-6"
           >
             <div className="text-center">
               <p className="text-lg text-gray-400">
@@ -83,20 +223,37 @@ const MultiStepContainer = () => {
 
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
               <div className="flex-1">
+                <div>
+                  <label className="block text-lg font-semibold mb-2">
+                    Please enter your name:
+                  </label>
+                  <input
+                    className="text-sm w-full bg-transparent text-gray-700 border border-gray-900 p-2 mb-6"
+                    placeholder="Enter your name..."
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  ></input>
+                </div>
                 <div className="mt-1">
                   <label className="block text-lg font-semibold mb-2">
                     Skill Owned:
                   </label>
-                  <Dropdown options={DropdownOptions} />
+                  <Dropdown
+                    options={DropdownOptions}
+                    value={skillOwned}
+                    onChange={setSkillOwned}
+                  />
                 </div>
 
                 <div>
                   <label className="block text-lg font-semibold mb-2 mt-4">
                     Select date of birth:
                   </label>
-                  <CalendarComponent />
+                  <CalendarComponent
+                    value={dateOfBirth}
+                    onChange={setDateOfBirth}
+                  />
                 </div>
-
                 <div className="mt-4">
                   <label className="block text-lg font-semibold mb-2">
                     Description:
@@ -105,8 +262,10 @@ const MultiStepContainer = () => {
                     id="description"
                     placeholder="Describe yourself..."
                     name="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     required
-                    className="form-textarea placeholder-gary-600 bg-transparent text-gray-600 pl-2 block w-full h-72 border border-gray-600 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                    className="form-textarea placeholder-gray-600 bg-transparent text-gray-900 pl-2 block w-full h-56 border border-gray-900 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                   ></textarea>
                 </div>
               </div>
@@ -114,9 +273,9 @@ const MultiStepContainer = () => {
               <div className="flex-1">
                 <div>
                   <label className="block text-lg font-semibold mb-2">
-                    Event Location:
+                    Location:
                   </label>
-                  <MapComponent onLocationSelect={handleLocationSelect} />
+                  <MapComponent onChange={handleLocationSelect} value={location} />
                 </div>
 
                 <div className="flex flex-col space-y-4 mt-4">
@@ -124,13 +283,16 @@ const MultiStepContainer = () => {
                     htmlFor="file-upload"
                     className="block text-lg font-semibold mb-2"
                   >
-                    Upload Event Photo:
+                    Upload Your Photo:
                   </label>
                   <input
                     id="file-upload"
                     type="file"
                     accept="image/*"
-                    className="file-input text-sm text-gray-700 file:bg-gray-300 file:border-none file:px-4 file:py-2 file:rounded-full file:text-gray-600 file:font-semibold hover:file:bg-blue-nova hover:file:text-white"
+                    className="file-input text-sm text-gray-700 file:bg-gray-300 file:border-none file:px-4 file:py-2 file:rounded-full file:text-gray-900 file:font-semibold hover:file:bg-blue-navy hover:file:text-white"
+                    onChange={(e) => {
+                      setFile(e.target.files[0]);
+                    }}
                   />
                 </div>
               </div>
@@ -140,13 +302,13 @@ const MultiStepContainer = () => {
               <button
                 type="button"
                 onClick={prevStep}
-                className="py-2 px-4 bg-transparent border border-black animation-pulse text-gray-600 hover:scale-105 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+                className="py-2 px-4 bg-transparent border border-black animation-pulse text-gray-900 hover:scale-105 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
               >
                 Go Back
               </button>
               <button
                 type="submit"
-                className="py-2 px-4 bg-transparent border border-black animation-pulse text-gray-600 hover:scale-105 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+                className="py-2 px-4 bg-transparent border border-black animation-pulse text-gray-900 hover:scale-105 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
               >
                 Submit
               </button>

@@ -80,7 +80,6 @@ const SignInForm = () => {
         />
 
         <FormInput
-          //label="Password"
           inputOptions={{
             type: "password",
             required: true,

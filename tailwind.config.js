@@ -14,7 +14,12 @@ module.exports = {
       colors:{
         'blue-nova':'#5b6d92',
         'polar-sky':'#d6d6d6',
-        'gray-custom':'#c0c4c4'
+        'gray-custom':'#c0c4c4',
+        'yellow':"#FFF455",
+        'blue-navy':"#00152c"
+      },
+      rotate: {
+        '180': '180deg',
       }
     },
   },

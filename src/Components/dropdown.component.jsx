@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
-const Dropdown = ({ options }) => {
+const Dropdown = ({ options, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  const selectOption = (option) => {
-    if (selectedOptions.includes(option)) {
-      setSelectedOptions(selectedOptions.filter((selectedOption) => selectedOption !== option));
-    } else {
-      setSelectedOptions([...selectedOptions, option]);
+  useEffect(() => {
+    if (!options.some(option => selectedOptions.includes(option))) {
+      setSelectedOptions([]);
     }
+  }, [options]);
+
+  const toggleDropdown = () => setIsOpen(prevIsOpen => !prevIsOpen);
+
+  const addOption = (option) => {
+    setSelectedOptions(prevSelectedOptions => {
+      if (prevSelectedOptions.includes(option)) {
+        return prevSelectedOptions;
+      }      
+      if (prevSelectedOptions.length >= 3) {
+        toast.error("Max 3 skills permitted");
+        return prevSelectedOptions;
+      }
+      const newSelectedOptions = [...prevSelectedOptions, option];
+      setTimeout(() => onChange(newSelectedOptions), 0);
+      return newSelectedOptions;
+    });
+  };
+
+  const removeOption = (option) => {
+    setSelectedOptions(prevSelectedOptions => {
+      const newSelectedOptions = prevSelectedOptions.filter(so => so !== option);
+      setTimeout(() => onChange(newSelectedOptions), 0);
+      return newSelectedOptions;
+    });
   };
 
   return (
@@ -20,24 +42,41 @@ const Dropdown = ({ options }) => {
         <div className="flex flex-col items-center relative">
           <div className="w-full">
             <div
-              className="my-2 p-1 flex border border-gray-600  cursor-pointer"
+              className="my-2 p-1 flex border border-gray-600 cursor-pointer"
               onClick={toggleDropdown}
+              aria-expanded={isOpen}
+              role="button"
+              tabIndex="0"
             >
               {selectedOptions.length > 0 ? (
                 selectedOptions.map((option, index) => (
-                  <div key={index} className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded bg-gray-200 border border-black">
+                  <div
+                    key={index}
+                    className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded bg-gray-200 border border-black"
+                  >
                     {option}
-                    <button onClick={() => selectOption(option)} className="ml-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeOption(option);
+                      }}
+                      className="ml-2"
+                    >
                       &times;
                     </button>
                   </div>
                 ))
               ) : (
-                <span className="flex-1 p-1 px-2 text-gray-600">Select an option</span>
+                <span className="flex-1 p-1 px-2 text-gray-600">
+                  Select an option
+                </span>
               )}
-
               <span className="text-gray-500 w-8 py-1 pl-2 pr-1 flex items-center border-l border-gray-500">
-                <svg className="fill-current h-4 w-4 transform" viewBox="0 0 20 20" style={{transform: isOpen ? 'rotate(180deg)' : ''}}>
+                <svg
+                  className="fill-current h-4 w-4 transform"
+                  viewBox="0 0 20 20"
+                  style={{ transform: isOpen ? "rotate(180deg)" : "" }}
+                >
                   <path d="M5.707 7.293a1 1 0 011.414 0L10 10.172l2.879-2.879a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path>
                 </svg>
               </span>
@@ -50,8 +89,8 @@ const Dropdown = ({ options }) => {
                 {options.map((option, index) => (
                   <div
                     key={index}
-                    className="cursor-pointer w-full border-gray-600  border hover:bg-gray-300  p-2"
-                    onClick={() => selectOption(option)}
+                    className="cursor-pointer w-full border-gray-600 border hover:bg-gray-300 p-2"
+                    onClick={() => addOption(option)}
                   >
                     {option}
                   </div>

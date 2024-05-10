@@ -7,17 +7,26 @@ import {
   PopoverHandler,
   PopoverContent,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format, isValid } from "date-fns";
 import { parse } from "date-fns";
 
 
 
-export const CalendarComponent =()=>{
+export const CalendarComponent =({value,onChange})=>{
     const [date, setDate] = useState(new Date());
     const [inputValue, setInputValue] = useState("");
     const [viewMonth, setViewMonth] = useState(new Date());
-    const [location, setLocation] = useState();
+
+    useEffect(()=>{
+      if(value){
+        setInputValue(format(value,"dd-MM-yyyy"));
+        setViewMonth(value);
+      }else{
+        setInputValue("");
+      }
+    },[value]);
+
 
     const handleInputChange = (event) => {
         const typedDate = event.target.value;
@@ -26,21 +35,25 @@ export const CalendarComponent =()=>{
         if (typedDate) {
             const parsedDate = parse(typedDate, "dd-MM-yyyy", new Date());
             if (isValid(parsedDate)) {
-              setViewMonth(parsedDate);
-              setDate(parsedDate);
+              // setViewMonth(parsedDate);
+              // setDate(parsedDate);
+              onChange(parsedDate);
             } else {
-              setDate(undefined);
+              //setDate(undefined);
+              onChange(undefined);
             }
           } else {
-            setDate(undefined);
+           // setDate(undefined);
+           onChange(undefined);
           }
     }
 
 
     const handleDaySelect = (selectedDate) => {
-        setDate(selectedDate);
+        onChange(selectedDate);
+        //setDate(selectedDate);
         setViewMonth(selectedDate || new Date());
-        setInputValue(selectedDate ? format(selectedDate, "dd-MM-yyy") : "");
+        setInputValue(selectedDate ? format(selectedDate, "dd-MM-yyyy") : "");
       };
     return(
         <div className="flex flex-col space-y-4">

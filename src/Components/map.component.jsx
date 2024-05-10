@@ -1,59 +1,91 @@
-import React, { useState, useCallback,useRef } from 'react';
-import { GoogleMap, LoadScript, Marker,StandaloneSearchBox } from '@react-google-maps/api';
+  import React, { useState, useCallback, useRef } from "react";
+  import {
+    GoogleMap,
+    LoadScript,
+    Marker,
+    StandaloneSearchBox,
+  } from "@react-google-maps/api";
+  import { toast } from "react-toastify";
+  import { debounce } from "lodash";
+  import { useEffect } from "react";
+  import ReverseGeocodingData from "./reverseGeocoding.function";
 
-const containerStyle = {
-  width: '100%',
-  height: '400px',
-};
+  const containerStyle = {
+    width: "100%",
+    height: "350px",
+  };
 
-const defaultCenter = {
-  lat: 	46.770439,
-  lng: 	23.591423,
-};
+  const defaultCenter = {
+    lat: 46.770439,
+    lng: 23.591423,
+  };
 
-const libraries = ["places"];
-const MapComponent = () => {
+  //const libraries = ['places'];
+
+  const MapComponent = ({ onChange,value }) => {
     const [mapCenter, setMapCenter] = useState(defaultCenter);
     const [selectedLocation, setSelectedLocation] = useState(null);
     const searchBoxRef = useRef(null);
-  
+    const [isScriptLoading, setIsScriptLoading] = useState(true);
+
     const onLoad = useCallback((ref) => {
       searchBoxRef.current = ref;
     }, []);
-  
+
+    useEffect(() => {
+      if (value) {
+        setMapCenter(value);
+        setSelectedLocation(value);
+      }
+    }, [value]);
+
     const onPlacesChanged = useCallback(() => {
       const places = searchBoxRef.current.getPlaces();
-      if (places && places.length > 0) {
-        const location = places[1].geometry.location;
-        setMapCenter({
-          lat: location.lat(),
-          lng: location.lng(),
-        });
-        setSelectedLocation({
-          lat: location.lat(),
-          lng: location.lng(),
-        });
+      if (!places || places.length === 0) {
+        toast.error("No locations found. Try a different query.");
+        return;
       }
-    }, []);
-  
+      const location = places[0].geometry.location;
+      const newLocation = {
+        lat: location.lat(),
+        lng: location.lng(),
+      };
+      setMapCenter(newLocation);
+      setSelectedLocation(newLocation); 
+      onChange(newLocation);
+    }, [onChange]);
+
+
+    
+
+    const debouncedPlacesChanged = debounce(onPlacesChanged, 300);
+
     return (
-      <LoadScript googleMapsApiKey="AIzaSyCQRtyQ6iOxuM9A_ecJaqINRh5b0mE0zZs" libraries={libraries}>
-        <StandaloneSearchBox onLoad={onLoad} onPlacesChanged={onPlacesChanged}>
-          <input
-            type="text"
-            placeholder="Enter a location"
-            className="form-control bg-transparent placeholder-gray-600 border border-gray-600 p-3 w-full"
-          />
-        </StandaloneSearchBox>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={mapCenter}
-          zoom={10}
-        >
-          {selectedLocation && <Marker position={selectedLocation} />}
-        </GoogleMap>
-      </LoadScript>
-    );
-  };
-  
+          <>
+            <StandaloneSearchBox
+              onLoad={onLoad}
+              onPlacesChanged={debouncedPlacesChanged}
+            >
+              <input
+                required
+                type="text"
+                placeholder="Enter a location"
+                className="form-control bg-transparent placeholder-gray-600 border border-gray-600 p-3 w-full"
+                aria-label="Search for a location"
+              />
+            </StandaloneSearchBox>
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={mapCenter}
+              zoom={10}
+            >
+              {selectedLocation && <Marker position={selectedLocation} />}
+            </GoogleMap>
+          </>
+        );
+      };
+    
+
   export default MapComponent;
+
+

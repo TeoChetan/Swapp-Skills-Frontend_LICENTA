@@ -9,6 +9,7 @@
     userAuth,
   } from "firebase/auth";
 import {toast} from 'react-toastify'
+import { useState,useEffect,useContext,createContext } from "react";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCQRtyQ6iOxuM9A_ecJaqINRh5b0mE0zZs",
@@ -32,6 +33,44 @@ import {toast} from 'react-toastify'
 
   export const signInWithGooglePopup = () =>
     signInWithPopup(auth, googleProvider);
+
+//asta ii tot ce am adaugat
+const CSRFTokenContext = createContext();
+
+export const CSRFTokenProvider = ({ children }) => {
+    const [csrfToken, setCSRFToken] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAndSetToken = async () => {
+            const token = await fetchCsrfToken();
+            if (token) {
+                setCSRFToken(token);
+                setLoading(false);
+            } else {
+                setLoading(true);
+            }
+        };
+
+        fetchAndSetToken();
+        
+        
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;  
+    }
+
+    return (
+        <CSRFTokenContext.Provider value={csrfToken}>
+            {children}
+        </CSRFTokenContext.Provider>
+    );
+};
+
+export const useCSRFToken = () => useContext(CSRFTokenContext);
+    
+//
 
   export const fetchCsrfToken = async () => {
     try {
@@ -118,31 +157,3 @@ import {toast} from 'react-toastify'
     await createUserWithGoogleAuth();
   };
 
-//   export const waitForEmailVerification = async () => {
-//     return new Promise((resolve, reject) => {
-//       const auth = getAuth();
-//         const unsubscribe = auth.onAuthStateChanged(user => {
-//         if (user) {
-//           console.log("ana are mere",user);
-//           user.reload().then(() => {
-//             if (user.emailVerified) {
-//               console.log("Email has been verified");
-//               resolve(user); 
-//             } else {
-//               console.log("Email not verified yet");
-//             }
-//           });
-//         } else {
-//           reject(new Error("No user signed in"));
-//         }
-//       });
-//       setTimeout(()=>{
-//         unsubscribe();
-//         reject(new Error("Timeout waiting for email verification"));
-
-//       },3000000)
-      
-//   });
-
-
-// };

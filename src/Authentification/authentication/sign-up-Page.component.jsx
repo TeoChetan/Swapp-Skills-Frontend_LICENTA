@@ -6,7 +6,7 @@ import {handleSignUpWithGoogle} from "../../utils/firebase.utils"
 
 const SignupPage = () => {
   return (
-    <div className="bg-polar-sky flex justify-center h-full">
+    <div className="bg-polar-sky flex justify-center h-full min-h-screen">
       <div className="authenticate-form bg-white flex flex-col lg:flex-row text-blue-nova rounded-xl w-full lg:w-4/6 lg:m-10 max-w-4xl m-auto lg:max-h-[700px] shadow-2xl ring-black ring-opacity-50 ">
         <div className="sign-in-content flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-8 lg:py-20 order-1 md:order-2">
           <h1 className="text-center font-bold text-xl sm:text-2xl lg:text-4xl mb-2 lg:mb-5">
@@ -14,7 +14,7 @@ const SignupPage = () => {
           </h1>          
           <SignUpForm />
         </div>
-        <div className="sign-in-image flex flex-col md:order-1 justify-center items-center bg-blue-nova rounded-b-none lg:rounded-l-xl lg:rounded-r-none  md:rounded-t-xl  p-8 lg:p-12 text-center shadow-lg">
+        <div className="sign-in-image flex flex-col md:order-1 justify-center items-center bg-blue-navy rounded-b-none lg:rounded-l-xl lg:rounded-r-none  md:rounded-t-xl  p-8 lg:p-12 text-center shadow-lg">
           <h1 className="text-white font-bold text-2xl lg:text-3xl mb-4">
             Hello, Friend!
           </h1>
