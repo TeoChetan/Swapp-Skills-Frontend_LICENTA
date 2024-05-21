@@ -1,14 +1,12 @@
   import React, { useState, useCallback, useRef } from "react";
   import {
     GoogleMap,
-    LoadScript,
     Marker,
     StandaloneSearchBox,
   } from "@react-google-maps/api";
   import { toast } from "react-toastify";
   import { debounce } from "lodash";
   import { useEffect } from "react";
-  import ReverseGeocodingData from "./reverseGeocoding.function";
 
   const containerStyle = {
     width: "100%",
@@ -20,13 +18,11 @@
     lng: 23.591423,
   };
 
-  //const libraries = ['places'];
 
   const MapComponent = ({ onChange,value }) => {
     const [mapCenter, setMapCenter] = useState(defaultCenter);
     const [selectedLocation, setSelectedLocation] = useState(null);
     const searchBoxRef = useRef(null);
-    const [isScriptLoading, setIsScriptLoading] = useState(true);
 
     const onLoad = useCallback((ref) => {
       searchBoxRef.current = ref;

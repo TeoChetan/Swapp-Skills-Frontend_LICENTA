@@ -1,13 +1,11 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import MapComponent from "../../Components/map.component";
-import { useCSRFToken} from "../../utils/firebase.utils";
+import { useCSRFToken } from "../../utils/firebase.utils";
 import ReverseGeocodingData from "../../Components/reverseGeocoding.function";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
 
 const UserAccountPage = () => {
   const [user, setUser] = useState({
@@ -22,8 +20,13 @@ const UserAccountPage = () => {
   const csrfToken = useCSRFToken();
   const [initialUserData, setInitialUserData] = useState(null);
   const navigateTo = useNavigate();
-  const handleLocationSelect = async(selectedLocation) => {
-    const locationName = await ReverseGeocodingData(selectedLocation.lat,selectedLocation.lng);
+  const fileInputRef = useRef(null);
+
+  const handleLocationSelect = async (selectedLocation) => {
+    const locationName = await ReverseGeocodingData(
+      selectedLocation.lat,
+      selectedLocation.lng
+    );
 
     if (selectedLocation.lat && selectedLocation.lng) {
       setUser((prevUser) => ({
@@ -31,7 +34,7 @@ const UserAccountPage = () => {
         location: {
           lat: selectedLocation.lat,
           lng: selectedLocation.lng,
-          name:locationName
+          name: locationName,
         },
       }));
     }
@@ -43,6 +46,45 @@ const UserAccountPage = () => {
       ...prevUser,
       [name]: value,
     }));
+  };
+
+  const handleProfilePictureChange = async (e) => {
+    const file = e.target.files[0];
+    if (file && user.uid) {
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("uid", user.uid);
+
+        const response = await fetch(`http://localhost:8080/upload`, {
+          method: "POST",
+          headers: {
+            'X-CSRF-TOKEN': csrfToken,
+          },
+          body: formData,
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to upload profile picture");
+        }
+
+        const imageUrl = await response.text();
+        setUser((prevUser) => ({
+          ...prevUser,
+          profilePictureUrl: imageUrl,
+        }));
+
+        toast.success("Profile picture updated successfully!");
+      } catch (error) {
+        console.error("Error uploading profile picture:", error);
+        toast.error("Failed to upload profile picture.");
+      }
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
   };
 
   useEffect(() => {
@@ -68,64 +110,68 @@ const UserAccountPage = () => {
       setInitialUserData(userData);
     } catch (error) {
       console.error("Error fetching user data:", error);
-      alert("Failed to load user data.");
+      toast.error("Failed to load user data.");
     }
   };
 
   const handleDiscard = () => {
     setUser(initialUserData);
   };
-  console.log(user);
-  console.log(user.location);
-  console.log(user.uid)
-  const userId = user.uid;
-
 
   const handleUpdateInfo = async () => {
     try {
-        const response = await fetch(`http://localhost:8080/userDetails/${userId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify(user),
-            credentials: 'include'
+      const response = await fetch(`http://localhost:8080/userDetails/${user.uid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": csrfToken,
+        },
+        body: JSON.stringify(user),
+        credentials: "include",
+      });
 
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to update user data');
-        }
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        toast.success("User information updated successfully!");
-        window.location.reload();
-        
+      if (!response.ok) {
+        throw new Error("Failed to update user data");
+      }
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      toast.success("User information updated successfully!");
+      window.location.reload();
     } catch (error) {
-        console.error("Error updating user data:", error);
-        toast.success("Failed to update user information.");
+      console.error("Error updating user data:", error);
+      toast.error("Failed to update user information.");
     }
-};
-
+  };
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col lg:flex-row">
-    <div className="flex flex-col items-center lg:items-start lg:w-1/4 p-6 border-r border-gray-800">
-    <div className="avatar mb-4 flex flex-col sm:flex-row items-center sm:items-start">
-      <div className="rounded-full w-24 h-24 bg-gray-700 flex items-center justify-center">
-        <img
-          src={user.profilePictureUrl || "defaultProfilePic.png"}
-          alt="Profile Pic"
-          className="rounded-full w-24 h-24"
-        />
-      </div>
-      <h3 className="pt-8 text-center sm:text-left text-xl  sm:mt-0 sm:ml-4">{user.fullName || 'User Name'}</h3>
-    </div>
-
-        <h3 className="text-2xl font-semibold">{}</h3>
-        <div className="flex justify-between w-full mt-2"></div>
-        <div className=" flex flex-col mt-6 w-full">
+      <div className="flex flex-col items-center lg:items-start lg:w-1/4 p-6 border-r border-gray-800">
+        <div className="avatar mb-4 flex flex-col sm:flex-row items-center sm:items-start relative">
+          <div
+            className="rounded-full w-24 h-24 bg-gray-700 flex items-center justify-center cursor-pointer relative"
+            onClick={handleImageClick}
+          >
+            <img
+              src={user.profilePictureUrl || "defaultProfilePic.png"}
+              alt="Profile Pic"
+              className="rounded-full w-24 h-24"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+              <span className="text-gray-300 font-semibold">Edit</span>
+            </div>
+          </div>
+          <h3 className="pt-8 text-center sm:text-left text-xl sm:mt-0 sm:ml-4">
+            {user.fullName || "User Name"}
+          </h3>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleProfilePictureChange}
+            className="hidden"
+          />
+        </div>
+        <div className="flex flex-col mt-6 w-full">
           <button className="py-2 border-b border-gray-800">Messenger</button>
           <button className="py-2 border-b border-gray-800">My Account</button>
           <button className="py-2 border-b border-gray-800">
@@ -212,7 +258,10 @@ const UserAccountPage = () => {
             >
               Discard
             </button>
-            <button className="px-4 py-2 bg-blue-navy rounded hover:bg-gray-500" onClick={handleUpdateInfo}>
+            <button
+              className="px-4 py-2 bg-blue-navy rounded hover:bg-gray-500"
+              onClick={handleUpdateInfo}
+            >
               Update Info
             </button>
           </div>

@@ -1,54 +1,80 @@
-import React, { useState } from "react";
-import { fetchUserData } from "../utils/fetchUserData.component";
-import { useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
+import {
+  AiOutlineMessage,
+  AiOutlineUser,
+  AiFillHeart,
+  AiOutlineHeart,
+  AiOutlineInfoCircle,
+  AiOutlineEnvironment,
+} from 'react-icons/ai';
+import { useState } from 'react';
 
-const UserCard = ({ user }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const auth = getAuth();
+const UserCard = ({ user, currentUserId }) => {
+  const history = useNavigate();
+  const [liked, setLiked] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        fetchUserData(currentUser.uid);
-      } else {
-        console.log("No user is signed in.");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  const toggleLike = () => {
+    setLiked(!liked);
+  };
 
-  console.log(user);
+  const openChat = () => {
+    history(`/messages/${user.uid}`);
+  };
+
+  const skills = user.skillOwned || [];
+  const profilePictureUrl = user.profilePictureUrl || "defaultProfilePic.png";
+  const fullName = user.fullName || "Anonymous";
+  const locationName = user.location?.name || "Unknown location";
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 ">
-    <div className="sm:max-w-sm md:w-max lg:w-max rounded-lg  shadow-lg bg-white text-center">
-      <div className="bg-blue-nova p-4">
-        <div className="avatar mb-4">
-          <div className="rounded-full w-24 h-24 overflow-hidden mx-auto border border-black">
-            <img src={user.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
+    <div className="lg:w-card lg:h-card max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden relative">
+      <div
+        className="w-full h-64 bg-cover bg-center rounded-t-lg"
+        style={{ backgroundImage: `url(${profilePictureUrl})` }}
+      />
+      <div className="px-8 py-6 bg-white">
+        <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
+          <h2 className="text-2xl font-bold text-black text-center">
+            {fullName}
+          </h2>
+          <div className="flex items-center text-black text-sm">
+            <AiOutlineEnvironment className="text-lg mr-2" />
+            <p>{locationName}</p>
           </div>
         </div>
-        <h2 className="text-lg sm:text-xl font-bold text-white">{user.fullName}</h2>
-        <p className="text-sm sm:text-base text-white">{user.location.name}</p>
-        <p className="text-white font-semibold">UI/UX designer and front-end developer</p>
-        <div className="my-4">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Message
-          </button>
-          <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">
-            Info
-          </button>
+
+        <h3 className="font-bold text-xl text-black">Skills:</h3>
+        <div className="flex flex-wrap justify-center">
+          {skills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-gray-200 text-black py-1 px-2 rounded-full text-lg m-1"
+            >
+              {skill}
+            </span>
+          ))}
         </div>
       </div>
-      <div className="px-6 py-4 bg-white">
-        <h3 className="font-bold text-xl text-black mb-2">SKILLS</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
-       
-        </div>
+
+      <div className="flex justify-center space-x-4">
+        <button onClick={openChat}>
+          <AiOutlineMessage className="text-4xl text-black" />
+        </button>
+        <button onClick={() => (window.location.href = `/profile/${user.id}`)}>
+          <AiOutlineUser className="text-4xl text-black" />
+        </button>
+        <button onClick={toggleLike}>
+          {liked ? (
+            <AiFillHeart className="text-4xl text-red-500" />
+          ) : (
+            <AiOutlineHeart className="text-4xl text-black" />
+          )}
+        </button>
+        <button onClick={() => (window.location.href = `/info/${user.id}`)}>
+          <AiOutlineInfoCircle className="text-4xl text-black" />
+        </button>
       </div>
     </div>
-  </div>
   );
 };
 

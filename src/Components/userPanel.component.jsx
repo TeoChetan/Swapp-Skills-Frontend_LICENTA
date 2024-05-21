@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { fetchUserData } from "../utils/fetchUserData.component";
 import { AiOutlineHome, AiOutlineSearch, AiOutlineBell } from 'react-icons/ai';
-import { MdOutlineExplore, MdOutlineVideoLibrary, MdOutlineMessage } from 'react-icons/md';
-import { IoCreateOutline } from 'react-icons/io5';
+import { MdOutlineMessage } from 'react-icons/md';
 import { BsPerson } from 'react-icons/bs';
 
 export const UserPanel = () => {
@@ -31,10 +30,10 @@ export const UserPanel = () => {
             }
         });
         return () => unsubscribe();
-    }, []);
+    },[auth]);
 
     return (
-        <div className="flex flex-col items-start bg-white text-black w-32 md:w-40 lg:w-48 h-full ">
+        <div className="flex flex-col items-start bg-polar-sky text-black w-32 md:w-40 lg:w-48 h-full ">
         <Icon icon={<AiOutlineHome />} label="Home" />
         <Icon icon={<AiOutlineSearch />} label="Search" />
         <Icon icon={<MdOutlineMessage />} label="Messages" />
@@ -46,7 +45,7 @@ export const UserPanel = () => {
 };
 
 const Icon = ({ icon, label }) => (
-    <div className="flex items-center w-full px-4 py-3  group text-3xl hover:bg-gray-300 m-1 hover:rounded ">
+    <div className="flex items-center w-full px-4 py-3  group text-3xl hover:bg-white m-1 hover:rounded ">
         <div className="text-3xl mr-3">{icon}</div>
         <span className="text-base flex-1 text-left">{label}</span>
     </div>

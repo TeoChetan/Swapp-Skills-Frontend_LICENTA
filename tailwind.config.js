@@ -20,6 +20,12 @@ module.exports = {
       },
       rotate: {
         '180': '180deg',
+      },
+      width: {
+        'card': '500px'
+      },
+      height: {
+        'card': '500px' 
       }
     },
   },

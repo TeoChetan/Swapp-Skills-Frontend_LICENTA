@@ -6,7 +6,7 @@ import MapComponent from "../../Components/map.component";
 import { CalendarComponent } from "../../Components/calendar.component";
 import { getAuth } from "firebase/auth";
 import { toast,ToastContainer } from "react-toastify";
-import { fetchCsrfToken, useCSRFToken} from "../../utils/firebase.utils";
+import { useCSRFToken} from "../../utils/firebase.utils";
 import { useNavigate } from "react-router-dom";
 import ReverseGeocodingData from "../../Components/reverseGeocoding.function";
 
@@ -18,7 +18,6 @@ const MultiStepContainer = () => {
   const [fullName, setFullName] = useState("");
   const [skillOwned, setSkillOwned] = useState([]);
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
   const csrfToken = useCSRFToken();
 
   const handleLocationSelect = async(selectedLocation) => {

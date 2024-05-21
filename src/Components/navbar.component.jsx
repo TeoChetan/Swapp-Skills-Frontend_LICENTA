@@ -25,7 +25,7 @@ const Navbar = () => {
       }
     });
     return () => unsubscribe();
-  }, []);
+  },[auth]);
 
    const fetchUserData = async (userId) => {
     try {
@@ -38,7 +38,6 @@ const Navbar = () => {
     }
   };
 
-  const toggleNavbar = () => setIsOpen(!isOpen);
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
   const navigateTo = (path)=>{

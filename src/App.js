@@ -13,6 +13,7 @@ import Layout from "./Layouts/layout.component";
 import UserAccountPage from "./Pages/AccountPage/acountPage.component";
 import MapComponent from "./Components/map.component";
 import { ToastContainer } from "react-toastify";
+import MessagesPage from "./Pages/MessagesPage/messagePage.component";
 const libraries = ["places"];
 const App = () => {
   return (
@@ -33,6 +34,8 @@ const App = () => {
           <Route path="/swapp-skills/aboutUs" element={<Layout><AboutUsPage/></Layout>}/>
           <Route path="/swapp-skills/contactUs" element={<Layout><ContactUsPage/></Layout>}/>
           <Route path="/swapp-skills/myAcount" element={<Layout><UserAccountPage/></Layout>}/>
+          <Route path="/messages/:chatUserId" element={<Layout><MessagesPage/></Layout>} />
+
 
 
       </Routes>
