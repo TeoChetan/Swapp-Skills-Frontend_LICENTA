@@ -1,8 +1,6 @@
 import SignUpForm from "../sign-up-form/sign-up-form.component";
 import { Link } from "react-router-dom";
-import {ReactComponent as GoogleLogo} from "../../Assets/google.svg"
-import Button from "../../Components/button.component";
-import {handleSignUpWithGoogle} from "../../utils/firebase.utils"
+
 
 const SignupPage = () => {
   return (

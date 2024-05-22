@@ -6,7 +6,7 @@ import {
 } from "../../utils/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import Button from "../../Components/button.component";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { reload, sendEmailVerification } from "firebase/auth";
 import { Spinner } from "../../Components/spinner.component";
 import { toast, ToastContainer } from "react-toastify";

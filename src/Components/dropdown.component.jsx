@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
 const Dropdown = ({ options, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (!options.some(option => selectedOptions.includes(option))) {
+    // Only clear selected options if none of the current options are in the selected options
+    if (selectedOptions.length > 0 && !options.some(option => selectedOptions.includes(option))) {
       setSelectedOptions([]);
     }
-  }, [options]);
+  }, [options, selectedOptions]);
+
+  useEffect(() => {
+    onChange(selectedOptions);
+  }, [selectedOptions, onChange]);
 
   const toggleDropdown = () => setIsOpen(prevIsOpen => !prevIsOpen);
 
-  const addOption = (option) => {
+  const handleOptionClick = (option) => {
     setSelectedOptions(prevSelectedOptions => {
       if (prevSelectedOptions.includes(option)) {
         return prevSelectedOptions;
@@ -22,22 +28,31 @@ const Dropdown = ({ options, onChange }) => {
         toast.error("Max 3 skills permitted");
         return prevSelectedOptions;
       }
-      const newSelectedOptions = [...prevSelectedOptions, option];
-      setTimeout(() => onChange(newSelectedOptions), 0);
-      return newSelectedOptions;
+      return [...prevSelectedOptions, option];
     });
   };
 
   const removeOption = (option) => {
-    setSelectedOptions(prevSelectedOptions => {
-      const newSelectedOptions = prevSelectedOptions.filter(so => so !== option);
-      setTimeout(() => onChange(newSelectedOptions), 0);
-      return newSelectedOptions;
-    });
+    setSelectedOptions(prevSelectedOptions =>
+      prevSelectedOptions.filter(so => so !== option)
+    );
   };
 
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="w-full md:w-1/2 flex flex-col items-center mx-auto">
+    <div className="w-full md:w-1/2 flex flex-col items-center mx-auto" ref={dropdownRef}>
       <div className="w-full sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
         <div className="flex flex-col items-center relative">
           <div className="w-full">
@@ -47,6 +62,7 @@ const Dropdown = ({ options, onChange }) => {
               aria-expanded={isOpen}
               role="button"
               tabIndex="0"
+              onKeyDown={(e) => e.key === "Enter" && toggleDropdown()}
             >
               {selectedOptions.length > 0 ? (
                 selectedOptions.map((option, index) => (
@@ -90,7 +106,11 @@ const Dropdown = ({ options, onChange }) => {
                   <div
                     key={index}
                     className="cursor-pointer w-full border-gray-600 border hover:bg-gray-300 p-2"
-                    onClick={() => addOption(option)}
+                    onClick={() => handleOptionClick(option)}
+                    role="option"
+                    aria-selected={selectedOptions.includes(option)}
+                    tabIndex="0"
+                    onKeyDown={(e) => e.key === "Enter" && handleOptionClick(option)}
                   >
                     {option}
                   </div>

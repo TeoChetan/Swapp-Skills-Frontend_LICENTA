@@ -7,24 +7,32 @@ import {
   AiOutlineInfoCircle,
   AiOutlineEnvironment,
 } from 'react-icons/ai';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 const UserCard = ({ user, currentUserId }) => {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
 
-  const toggleLike = () => {
-    setLiked(!liked);
-  };
+  const toggleLike = useCallback(() => {
+    setLiked((prevLiked) => !prevLiked);
+  }, []);
 
-  const openChat = () => {
-    history(`/messages/${user.uid}`);
-  };
+  const openChat = useCallback(() => {
+    navigate(`/messages/${user.uid}`);
+  }, [navigate, user.uid]);
 
-  const skills = user.skillOwned || [];
-  const profilePictureUrl = user.profilePictureUrl || "defaultProfilePic.png";
-  const fullName = user.fullName || "Anonymous";
-  const locationName = user.location?.name || "Unknown location";
+  const viewProfile = useCallback(() => {
+    navigate(`/profile/${user.id}`);
+  }, [navigate, user.id]);
+
+  const viewInfo = useCallback(() => {
+    navigate(`/info/${user.id}`);
+  }, [navigate, user.id]);
+
+  const skills = useMemo(() => user.skillOwned || [], [user.skillOwned]);
+  const profilePictureUrl = useMemo(() => user.profilePictureUrl || "defaultProfilePic.png", [user.profilePictureUrl]);
+  const fullName = useMemo(() => user.fullName || "Anonymous", [user.fullName]);
+  const locationName = useMemo(() => user.location?.name || "Unknown location", [user.location?.name]);
 
   return (
     <div className="lg:w-card lg:h-card max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden relative">
@@ -60,7 +68,7 @@ const UserCard = ({ user, currentUserId }) => {
         <button onClick={openChat}>
           <AiOutlineMessage className="text-4xl text-black" />
         </button>
-        <button onClick={() => (window.location.href = `/profile/${user.id}`)}>
+        <button onClick={viewProfile}>
           <AiOutlineUser className="text-4xl text-black" />
         </button>
         <button onClick={toggleLike}>
@@ -70,7 +78,7 @@ const UserCard = ({ user, currentUserId }) => {
             <AiOutlineHeart className="text-4xl text-black" />
           )}
         </button>
-        <button onClick={() => (window.location.href = `/info/${user.id}`)}>
+        <button onClick={viewInfo}>
           <AiOutlineInfoCircle className="text-4xl text-black" />
         </button>
       </div>

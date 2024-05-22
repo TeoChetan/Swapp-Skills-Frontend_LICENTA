@@ -5,16 +5,13 @@ import SignInPage from "./Authentification/authentication/sign-in-Page.component
 import SignupPage from "./Authentification/authentication/sign-up-Page.component";
 import MultiStepContainer from "./Pages/Dashboard/multistep";
 import { CSRFTokenProvider } from "./utils/firebase.utils";
-import { LoadScript } from "@react-google-maps/api";
 import MainPage from "./Pages/MainPage/mainPage.component";
 import AboutUsPage from "./Pages/AboutUsPage/aboutUs.component";
 import ContactUsPage from "./Pages/ContactUsPage/contactUsPage.component";
 import Layout from "./Layouts/layout.component";
 import UserAccountPage from "./Pages/AccountPage/acountPage.component";
-import MapComponent from "./Components/map.component";
 import { ToastContainer } from "react-toastify";
 import MessagesPage from "./Pages/MessagesPage/messagePage.component";
-const libraries = ["places"];
 const App = () => {
   return (
     <CSRFTokenProvider>

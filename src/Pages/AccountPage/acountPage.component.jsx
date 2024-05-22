@@ -5,7 +5,6 @@ import MapComponent from "../../Components/map.component";
 import { useCSRFToken } from "../../utils/firebase.utils";
 import ReverseGeocodingData from "../../Components/reverseGeocoding.function";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const UserAccountPage = () => {
   const [user, setUser] = useState({
@@ -19,7 +18,6 @@ const UserAccountPage = () => {
   const auth = getAuth();
   const csrfToken = useCSRFToken();
   const [initialUserData, setInitialUserData] = useState(null);
-  const navigateTo = useNavigate();
   const fileInputRef = useRef(null);
 
   const handleLocationSelect = async (selectedLocation) => {
@@ -96,7 +94,7 @@ const UserAccountPage = () => {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [auth]);
 
   const fetchUserData = async (userId) => {
     try {

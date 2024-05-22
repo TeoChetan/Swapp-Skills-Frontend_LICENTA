@@ -1,38 +1,30 @@
 import { useState } from "react";
 import {
-  auth,
-  createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
+  auth
 } from "../../utils/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import Button from "../../Components/button.component";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  reload,
-  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { Spinner } from "../../Components/spinner.component";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../Assets/toast-custom.css";
 
-const defaultFormFields = {
-  displayName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-};
+// const defaultFormFields = {
+//   displayName: "",
+//   email: "",
+//   password: "",
+//   confirmPassword: "",
+// };
 
 const SignInForm = () => {
-  const [formFields, setFormFields] = useState(defaultFormFields);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-  };
+
 
   const signInUser = async (email, password) => {
     try {

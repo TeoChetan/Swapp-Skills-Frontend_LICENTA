@@ -16,7 +16,6 @@ class WebSocketService {
       this.subscribeToTopic('/topic/messages', callback);
     }, error => {
       console.error('Connection error: ' + error);
-      // Attempt to reconnect after a delay
       setTimeout(() => {
         this.connect(callback);
       }, 5000);
@@ -24,7 +23,6 @@ class WebSocketService {
 
     this.client.onclose = () => {
       console.log('Connection closed');
-      // Attempt to reconnect
       setTimeout(() => {
         this.connect(callback);
       }, 5000);

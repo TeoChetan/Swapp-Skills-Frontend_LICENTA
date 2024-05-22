@@ -54,6 +54,7 @@ const ContactUsPage = () => {
 
   return (
     <div className="bg-polar-sky">
+    <ToastContainer/>
       <div className="min-h-screen flex flex-col md:flex-row pt-12 md:pt-32 px-4 md:px-0">
         <div className="flex flex-col justify-center flex-1 md:ml-10 lg:mr-48 md:-mt-48">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Get in Touch with Us</h2>

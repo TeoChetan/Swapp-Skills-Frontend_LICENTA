@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import UserCarousel from './carousel.component';
 import { AiOutlineSearch } from 'react-icons/ai';
 
@@ -9,24 +9,30 @@ const UserFilterCarousel = ({ initialUsers = [] }) => {
   // Memoize initialUsers to ensure it doesn't change between renders
   const stableInitialUsers = useMemo(() => initialUsers, [initialUsers]);
 
-  useEffect(() => {
-    const filterUsers = () => {
-      const filtered = stableInitialUsers.filter(user => {
-        const searchLower = searchFilter.toLowerCase();
-        const matchesLocation = user.location.name.toLowerCase().includes(searchLower);
-        const matchesName = user.fullName.toLowerCase().includes(searchLower);
-        const matchesSkills = user.skillOwned.some(skill => skill.toLowerCase().includes(searchLower));
-        return matchesLocation || matchesName || matchesSkills;
-      });
-      setFilteredUsers(filtered);
-    };
+  // Use useCallback to memoize the input change handler
+  const handleSearchChange = useCallback((e) => {
+    setSearchFilter(e.target.value);
+  }, []);
 
+  // Memoize the filtered users list to avoid unnecessary re-renders
+  const filteredUsersMemo = useMemo(() => {
     if (searchFilter === '') {
-      setFilteredUsers(stableInitialUsers);
-    } else {
-      filterUsers();
+      return stableInitialUsers;
     }
-  }, [searchFilter, stableInitialUsers]); 
+
+    const searchLower = searchFilter.toLowerCase();
+
+    return stableInitialUsers.filter(user => {
+      const matchesLocation = user.location.name.toLowerCase().includes(searchLower);
+      const matchesName = user.fullName.toLowerCase().includes(searchLower);
+      const matchesSkills = user.skillOwned.some(skill => skill.toLowerCase().includes(searchLower));
+      return matchesLocation || matchesName || matchesSkills;
+    });
+  }, [searchFilter, stableInitialUsers]);
+
+  useEffect(() => {
+    setFilteredUsers(filteredUsersMemo);
+  }, [filteredUsersMemo]);
 
   return (
     <div className="flex flex-col items-center w-full max-w-lg">
@@ -36,7 +42,7 @@ const UserFilterCarousel = ({ initialUsers = [] }) => {
           type="text"
           placeholder="Search by location, name, or skills..."
           value={searchFilter}
-          onChange={e => setSearchFilter(e.target.value)}
+          onChange={handleSearchChange}
           className="flex-grow p-2 focus:outline-none"
         />
       </div>
