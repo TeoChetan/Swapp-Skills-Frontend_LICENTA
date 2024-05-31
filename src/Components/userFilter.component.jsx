@@ -2,19 +2,29 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import UserCarousel from './carousel.component';
 import { AiOutlineSearch } from 'react-icons/ai';
 
+const deduplicateUsers = (users) => {
+  const uniqueUsers = [];
+  const userIds = new Set();
+
+  users.forEach(user => {
+    if (!userIds.has(user.user_ID)) {
+      uniqueUsers.push(user);
+      userIds.add(user.user_ID);
+    }
+  });
+  return uniqueUsers;
+};
+
 const UserFilterCarousel = ({ initialUsers = [] }) => {
   const [searchFilter, setSearchFilter] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(initialUsers);
+  const [filteredUsers, setFilteredUsers] = useState(deduplicateUsers(initialUsers));
 
-  // Memoize initialUsers to ensure it doesn't change between renders
-  const stableInitialUsers = useMemo(() => initialUsers, [initialUsers]);
+  const stableInitialUsers = useMemo(() => deduplicateUsers(initialUsers), [initialUsers]);
 
-  // Use useCallback to memoize the input change handler
   const handleSearchChange = useCallback((e) => {
     setSearchFilter(e.target.value);
   }, []);
 
-  // Memoize the filtered users list to avoid unnecessary re-renders
   const filteredUsersMemo = useMemo(() => {
     if (searchFilter === '') {
       return stableInitialUsers;
@@ -36,14 +46,14 @@ const UserFilterCarousel = ({ initialUsers = [] }) => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-lg">
-      <div className="flex items-center border rounded overflow-hidden">
+      <div className="flex items-center border border-blue-navy rounded overflow-hidden text-black">
         <Icon icon={<AiOutlineSearch />} />
         <input
           type="text"
           placeholder="Search by location, name, or skills..."
           value={searchFilter}
           onChange={handleSearchChange}
-          className="flex-grow p-2 focus:outline-none"
+          className="flex-grow p-2 focus:outline-none bg-transparent border border-black m-2"
         />
       </div>
       <UserCarousel users={filteredUsers} />
@@ -52,8 +62,8 @@ const UserFilterCarousel = ({ initialUsers = [] }) => {
 };
 
 const Icon = ({ icon }) => (
-  <div className="flex items-center px-4 py-3 text-3xl group hover:bg-white hover:rounded">
-    <div className="text-3xl mr-3">{icon}</div>
+  <div className="flex items-center px-4 py-3 text-3xl group">
+    <div className="text-3xl mr-2">{icon}</div>
   </div>
 );
 

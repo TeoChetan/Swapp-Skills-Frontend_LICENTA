@@ -12,6 +12,8 @@ import Layout from "./Layouts/layout.component";
 import UserAccountPage from "./Pages/AccountPage/acountPage.component";
 import { ToastContainer } from "react-toastify";
 import MessagesPage from "./Pages/MessagesPage/messagePage.component";
+import UserProfilePage from "./Pages/UserProfilePage/userProfilePage.component";
+import UsersOnMap from "./Pages/MapPage/usersOnMap.component";
 const App = () => {
   return (
     <CSRFTokenProvider>
@@ -32,6 +34,10 @@ const App = () => {
           <Route path="/swapp-skills/contactUs" element={<Layout><ContactUsPage/></Layout>}/>
           <Route path="/swapp-skills/myAcount" element={<Layout><UserAccountPage/></Layout>}/>
           <Route path="/messages/:chatUserId" element={<Layout><MessagesPage/></Layout>} />
+          <Route path="/profile/:userId" element={<Layout><UserProfilePage/></Layout>} />
+          <Route path="/usersOnMap" element={<Layout><UsersOnMap/></Layout>} />
+
+
 
 
 

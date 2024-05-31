@@ -4,6 +4,7 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 
 const UserCarousel = ({ users }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  console.log(users)
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? users.length - 1 : prevIndex - 1));

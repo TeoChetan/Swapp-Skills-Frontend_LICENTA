@@ -13,21 +13,25 @@ const UserCard = ({ user, currentUserId }) => {
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
 
-  const toggleLike = useCallback(() => {
+  const toggleLike = useCallback((e) => {
+    e.stopPropagation(); 
     setLiked((prevLiked) => !prevLiked);
   }, []);
 
-  const openChat = useCallback(() => {
+  const openChat = useCallback((e) => {
+    e.stopPropagation(); 
     navigate(`/messages/${user.uid}`);
   }, [navigate, user.uid]);
 
-  const viewProfile = useCallback(() => {
-    navigate(`/profile/${user.id}`);
-  }, [navigate, user.id]);
+  const viewProfile = useCallback((e) => {
+    e.stopPropagation(); 
+    navigate(`/profile/${user.uid}`);
+  }, [navigate, user.uid]);
 
-  const viewInfo = useCallback(() => {
-    navigate(`/info/${user.id}`);
-  }, [navigate, user.id]);
+  const viewInfo = useCallback((e) => {
+    e.stopPropagation();
+    navigate(`/info/${user.uid}`);
+  }, [navigate, user.uid]);
 
   const skills = useMemo(() => user.skillOwned || [], [user.skillOwned]);
   const profilePictureUrl = useMemo(() => user.profilePictureUrl || "defaultProfilePic.png", [user.profilePictureUrl]);

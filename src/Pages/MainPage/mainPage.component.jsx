@@ -3,6 +3,7 @@ import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import UserPanel from "../../Components/userPanel.component";
 import UserFilterCarousel from "../../Components/userFilter.component";
 import { fetchAllUsers } from "../../utils/fetchAllUsers.component"; 
+import FooterSocialComponent from "../../Layouts/footerSocials.component";
 
 const MainPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -40,7 +41,8 @@ const MainPage = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row w-full min-h-screen relative bg-polar-sky">
+    <div>
+    <div className="flex w-full min-h-screen bg-polar-sky">
       <button
         className="lg:hidden fixed top-4 left-4 p-2 bg-blue-500 text-white rounded-md z-50"
         onClick={toggleSidebar}
@@ -52,13 +54,13 @@ const MainPage = () => {
         )}
       </button>
       <div
-        className={`fixed lg:static top-0 left-0 h-full bg-polar-sky text-white shadow-xl transition-transform transform ${
+        className={`fixed lg:static top-0 left-0 h-full bg-blue-navy text-white shadow-xl transition-transform transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 w-64 z-40`}
       >
         <UserPanel />
       </div>
-      <div className="flex-1 flex flex-col justify-center items-center p-4 mt-0">
+      <div className="flex-1 flex flex-col justify-start items-center p-4 mt-0">
         <UserFilterCarousel initialUsers={users} />
         {loading && <p>Loading...</p>}
         {!loading && users.length < total && (
@@ -68,6 +70,9 @@ const MainPage = () => {
         )}
       </div>
     </div>
+    <FooterSocialComponent/>
+    </div>
+    
   );
 };
 

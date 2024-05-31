@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AiOutlineSend } from 'react-icons/ai';
+import { AiOutlineSend, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { fetchUserData } from '../../utils/fetchUserData.component';
 import webSocketService from '../../Services/webSocketService';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import format from 'date-fns/format';
+
+const Card = ({ user, onClick, currentUserId }) => (
+  <div className="cursor-pointer p-2 flex items-center border border-gray-200 rounded m-2" onClick={onClick}>
+    <img src={user.profilePictureUrl} alt={user.fullName} className="w-10 h-10 rounded-full mr-3" />
+    <div>
+      <div className="font-semibold">{user.uid === currentUserId ? 'Me' : user.fullName}</div>
+    </div>
+  </div>
+);
 
 const MessagesPage = () => {
   const { chatUserId } = useParams();
@@ -17,6 +26,7 @@ const MessagesPage = () => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isChatListVisible, setIsChatListVisible] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -45,8 +55,23 @@ const MessagesPage = () => {
           if (!response.ok) {
             throw new Error('Failed to fetch chats');
           }
-          const chatList = await response.json();
-          setChats(chatList);
+          let chatList = await response.json();
+
+          const chatListWithLastMessage = await Promise.all(chatList.map(async (chat) => {
+            const lastMessageResponse = await fetch(`http://localhost:8080/messages/last/${currentUserId}/${chat.uid}`);
+            if (!lastMessageResponse.ok) {
+              throw new Error('Failed to fetch last message');
+            }
+            const lastMessage = await lastMessageResponse.json();
+            return {
+              ...chat,
+              lastMessageTimestamp: new Date(lastMessage.timestamp)
+            };
+          }));
+
+          chatListWithLastMessage.sort((a, b) => b.lastMessageTimestamp - a.lastMessageTimestamp);
+
+          setChats(chatListWithLastMessage);
         } catch (error) {
           console.error('Error fetching chats:', error);
           setError('Error fetching chats');
@@ -111,6 +136,7 @@ const MessagesPage = () => {
 
   const handleChatClick = (userId) => {
     navigate(`/messages/${userId}`);
+    setIsChatListVisible(false); 
   };
 
   if (loading) {
@@ -122,25 +148,32 @@ const MessagesPage = () => {
   }
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/4 bg-gray-200 p-4">
+    <div className="flex h-screen flex-col lg:flex-row">
+      <div className="lg:hidden flex justify-between items-center p-4 bg-white border border-black text-white">
+        <h2 className="text-xl font-semibold">Messages</h2>
+        <button onClick={() => setIsChatListVisible(!isChatListVisible)} className="text-white">
+          {isChatListVisible ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
+        </button>
+      </div>
+      <div className={`lg:w-1/4 bg-blue-navy text-white p-4 lg:block ${isChatListVisible ? 'block' : 'hidden'} border-r border-black `}>
         <h2 className="text-xl font-semibold">Chats</h2>
         <ul>
           {chats.map((chat) => (
-            <li key={chat.uid} className="cursor-pointer p-2" onClick={() => handleChatClick(chat.uid)}>
-              {chat.fullName}
+            <li key={chat.uid}>
+              <Card user={chat} currentUserId={currentUserId} onClick={() => handleChatClick(chat.uid)} />
             </li>
           ))}
         </ul>
       </div>
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center p-4 bg-blue-500 text-white">
+            <div className="flex-1 flex flex-col relative">
+      <div className="absolute inset-0 flex-1 flex flex-col bg-chat-background bg-opacity-50"  >
+        <div className="flex items-center p-4 bg-white text-blue-navy shadow-xl border border-black">
           <h2 className="text-xl font-semibold">Chat with {chatUser?.fullName}</h2>
         </div>
-        <div className="flex-1 overflow-auto p-4 bg-gray-100">
+        <div className="flex-1 overflow-auto p-4 bg-">
           {messages.map((msg, index) => (
             <div key={index} className={`mb-4 ${msg.sender.uid === currentUserId ? 'text-right' : 'text-left'}`}>
-              <div className={`inline-block p-2 rounded ${msg.sender.uid === currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
+              <div className={`inline-block p-2 rounded ${msg.sender.uid === currentUserId ? 'bg-light-green text-black shadow-2xl' : 'bg-white text-black shadow-2xl'}`}>
                 {msg.content}
                 <div className="text-xs text-gray-500 mt-1">
                   {format(new Date(msg.timestamp), 'MMM d-h:mm a')}
@@ -149,18 +182,19 @@ const MessagesPage = () => {
             </div>
           ))}
         </div>
-        <div className="flex items-center p-4 bg-white border-t">
+        <div className="flex items-center p-4 bg-white border-t border-black">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type a message"
-            className="flex-grow p-2 border rounded"
+            className="flex-grow p-2 border border-gray-500  rounded"
           />
-          <button onClick={sendMessage} className="ml-2 p-2 bg-blue-500 text-white rounded">
+          <button onClick={sendMessage} className="ml-2 p-2 bg-light-green border border-black text-black rounded">
             <AiOutlineSend />
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
