@@ -7,9 +7,9 @@ const deduplicateUsers = (users) => {
   const userIds = new Set();
 
   users.forEach(user => {
-    if (!userIds.has(user.user_ID)) {
+    if (!userIds.has(user.uid)) {
       uniqueUsers.push(user);
-      userIds.add(user.user_ID);
+      userIds.add(user.uid);
     }
   });
   return uniqueUsers;

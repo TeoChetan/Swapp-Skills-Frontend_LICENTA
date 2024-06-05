@@ -24,7 +24,7 @@ const SignInPage = () => {
           </h1>
           <p className="text-white max-w-md text-base lg:text-lg">
              Your journey continues here. Enter your credentials to access your account and explore THE world of SWAPP SKILLS</p>
-          <Link className="text-white hover:text-gray-900 border border-polar-sky hover:border-black hover:scale-110 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-2xl text-sm text-center mt-5 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 px-10 py-2" to="/signup">Sign-up</Link>
+          <Link className="text-white hover:text-gray-200 border border-polar-sky hover:border-white hover:scale-110 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-2xl text-sm text-center mt-5 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 px-10 py-2" to="/signup">Sign-up</Link>
         </div>
       </div>
     </div>

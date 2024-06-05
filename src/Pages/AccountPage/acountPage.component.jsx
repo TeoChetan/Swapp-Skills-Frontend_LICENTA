@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { getAuth } from "firebase/auth";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import MapComponent from "../../Components/map.component";
 import { useCSRFToken } from "../../utils/firebase.utils";
 import ReverseGeocodingData from "../../Components/reverseGeocoding.function";
@@ -19,6 +19,7 @@ const UserAccountPage = () => {
   const csrfToken = useCSRFToken();
   const [initialUserData, setInitialUserData] = useState(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLocationSelect = async (selectedLocation) => {
     const locationName = await ReverseGeocodingData(
@@ -141,6 +142,14 @@ const UserAccountPage = () => {
     }
   };
 
+  const goToMessenger = () => {
+    navigate(`/messages/${user.uid}`);
+  };
+
+  const goToProfile = () => {
+    navigate(`/profile/${user.uid}`);
+  };
+
   return (
     <div className="bg-black text-white min-h-screen flex flex-col lg:flex-row">
       <div className="flex flex-col items-center lg:items-start lg:w-1/4 p-6 border-r border-gray-800">
@@ -170,11 +179,8 @@ const UserAccountPage = () => {
           />
         </div>
         <div className="flex flex-col mt-6 w-full">
-          <button className="py-2 border-b border-gray-800">Messenger</button>
-          <button className="py-2 border-b border-gray-800">My Account</button>
-          <button className="py-2 border-b border-gray-800">
-            Notifications
-          </button>
+          <button className="py-2 border-b border-gray-800" onClick={goToMessenger}>Messenger</button>
+          <button className="py-2 border-b border-gray-800" onClick={goToProfile}>My Profile</button>
         </div>
       </div>
       <div className="flex-1 p-6">
@@ -241,6 +247,8 @@ const UserAccountPage = () => {
           <div className="bg-black text-white p-6">
             <h3 className="text-xl font-semibold mb-3">Skills</h3>
             <ul className="list-disc list-inside">
+             
+
               {user.skillOwned.map((skill, index) => (
                 <li key={index} className="ml-4 my-1">
                   {skill}

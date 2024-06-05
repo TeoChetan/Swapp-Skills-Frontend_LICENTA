@@ -23,6 +23,7 @@ const MultiStepContainer = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+const [hasCompletedForm,setHasCompletedForm] = useState(false)
 
   const controllerRef = useRef(null);
 
@@ -46,12 +47,20 @@ const MultiStepContainer = () => {
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            setCurrentUser(user);
+            const response = await fetch(`http://localhost:8080/user/${user.uid}`);
+            const data = await response.json();
+            setHasCompletedForm(data.hasCompletedForm);
+            if (data.hasCompletedForm) {
+                navigate("/swapp-skills"); // Redirect to main page if form is completed
+            }
+        }
     });
 
     return () => unsubscribe();
-  }, []);
+}, [navigate]);
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -182,7 +191,7 @@ const MultiStepContainer = () => {
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      cleanUpAbortController(); // Ensure cleanup on component unmount
+      cleanUpAbortController(); 
     };
   }, []);
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { fetchUserData } from "../utils/fetchUserData.component";
-import { AiOutlineHome, AiOutlineSearch, AiOutlineBell } from 'react-icons/ai';
+import { AiOutlineHome, AiOutlineSearch, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineMessage } from 'react-icons/md';
 import { BsPerson } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
@@ -48,7 +48,7 @@ const UserPanel = () => {
             <Icon icon={<AiOutlineHome />} label="Home" path="/swapp-skills" navigate={navigate} />
             <Icon icon={<AiOutlineSearch />} label="Map" path="/usersOnMap" navigate={navigate} />
             <Icon icon={<MdOutlineMessage />} label="Messages" path={`/messages/${userId}`} navigate={navigate} />
-            <Icon icon={<AiOutlineBell />} label="Notifications" path="/notifications" navigate={navigate} />
+            <Icon icon={<AiOutlineHeart />} label="Favorites" path="/favorites" navigate={navigate} />
             <Icon icon={<BsPerson />} label="Profile" path={`/profile/${userId}`} navigate={navigate} />
         </div>
     );

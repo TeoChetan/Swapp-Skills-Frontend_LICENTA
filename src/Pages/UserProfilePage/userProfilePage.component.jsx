@@ -1,10 +1,12 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchUserData } from '../../utils/fetchUserData.component';
 import { fetchUserProfiles } from '../../utils/fetchUserProfiles.component';
+import { AiOutlineMessage } from 'react-icons/ai';
 
 const UserProfilePage = () => {
   const { userId } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,10 @@ const UserProfilePage = () => {
     loadAllUsers();
   }, []);
 
+  const handleStartChat = () => {
+    navigate(`/messages/${userId}`);
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
@@ -61,9 +67,18 @@ const UserProfilePage = () => {
             className="w-32 h-32 rounded-full object-cover border-4 border-white"
           />
         </div>
-        <div className="ml-8">
-          <h2 className="text-4xl font-bold text-white">{user.fullName || "Anonymous"}</h2>
-          <p className="text-white">{user.username}</p>
+        <div className="ml-8 flex items-center">
+          <div>
+            <h2 className="text-4xl font-bold text-white">{user.fullName || "Anonymous"}</h2>
+            <p className="text-white">{user.username}</p>
+          </div>
+          <button
+            onClick={handleStartChat}
+            className="ml-4 p-2 rounded-full bg-blue-500 hover:bg-blue-700 transition duration-300 ease-in-out"
+            aria-label="Start chat with user"
+          >
+            <AiOutlineMessage className="text-white text-4xl" />
+          </button>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -78,14 +93,14 @@ const UserProfilePage = () => {
             </div>
             <div>
               <label className="block font-medium text-gray-400">Email Address:</label>
-                {allUsers.map((user, index) => (
-                  userId === user.uid ? (
-                    <p key={index} className="mb-2 text-white">
-                      {user.email}
-                    </p>
-                  ) : null
-                ))}
-              </div>
+              {allUsers.map((user, index) => (
+                userId === user.uid ? (
+                  <p key={index} className="mb-2 text-white">
+                    {user.email}
+                  </p>
+                ) : null
+              ))}
+            </div>
             <div>
               <label className="block font-medium text-gray-400">Location:</label>
               <p className="text-white">{user.location?.name || "Unknown location"}</p>
@@ -123,7 +138,6 @@ const UserProfilePage = () => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

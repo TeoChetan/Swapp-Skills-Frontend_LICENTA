@@ -8,30 +8,33 @@ import {
   AiOutlineEnvironment,
 } from 'react-icons/ai';
 import { useState, useMemo, useCallback } from 'react';
+import { useFavorites } from './favorites.context';
+import { Tooltip } from 'react-tooltip';
 
-const UserCard = ({ user, currentUserId }) => {
+const UserCard = ({ user }) => {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   const toggleLike = useCallback((e) => {
-    e.stopPropagation(); 
-    setLiked((prevLiked) => !prevLiked);
-  }, []);
+    e.stopPropagation();
+    if (isFavorite(user.uid)) {
+      removeFromFavorites(user.uid);
+    } else {
+      addToFavorites(user);
+    }
+  }, [isFavorite, addToFavorites, removeFromFavorites, user]);
 
   const openChat = useCallback((e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     navigate(`/messages/${user.uid}`);
   }, [navigate, user.uid]);
 
   const viewProfile = useCallback((e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     navigate(`/profile/${user.uid}`);
   }, [navigate, user.uid]);
 
-  const viewInfo = useCallback((e) => {
-    e.stopPropagation();
-    navigate(`/info/${user.uid}`);
-  }, [navigate, user.uid]);
+
 
   const skills = useMemo(() => user.skillOwned || [], [user.skillOwned]);
   const profilePictureUrl = useMemo(() => user.profilePictureUrl || "defaultProfilePic.png", [user.profilePictureUrl]);
@@ -76,15 +79,16 @@ const UserCard = ({ user, currentUserId }) => {
           <AiOutlineUser className="text-4xl text-black" />
         </button>
         <button onClick={toggleLike}>
-          {liked ? (
+          {isFavorite(user.uid) ? (
             <AiFillHeart className="text-4xl text-red-500" />
           ) : (
             <AiOutlineHeart className="text-4xl text-black" />
           )}
         </button>
-        <button onClick={viewInfo}>
-          <AiOutlineInfoCircle className="text-4xl text-black" />
+        <button data-tooltip-id="infoTooltip" data-tooltip-content="Follow community guidelines for language use" >
+          <AiOutlineInfoCircle className="text-4xl text-black " />
         </button>
+        <Tooltip id="infoTooltip" place="top" effect="solid" />
       </div>
     </div>
   );

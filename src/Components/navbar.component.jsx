@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback,useMemo } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import Hamburger from "./hamburger.component";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as HomeLogo } from "../Assets/crown.svg";
@@ -49,13 +49,24 @@ const Navbar = () => {
 
   const listItems = useMemo(() => {
     return pages.map((page, index) => (
-      <li key={index} className="px-3 py-2 cursor-pointer rounded hover:bg-sky-100">
+      <li key={index} className="px-3 py-2 cursor-pointer rounded hover:bg-sky-300">
         <button onClick={() => navigateTo(page.path)} className="text-white hover:text-black">
           {page.name}
         </button>
       </li>
     ));
   }, [navigateTo]);
+
+  const handleLogout = useCallback(() => {
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out.");
+        navigate("/"); // Redirect to the login page after logout
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
+  }, [auth, navigate]);
 
   return (
     <div className="container relative m-auto p-5 flex justify-between items-center bg-black">
@@ -104,11 +115,11 @@ const Navbar = () => {
           </div>
           {isDropdownOpen && (
             <ul className="absolute right-0 w-48 mt-52 py-2 bg-white shadow-xl rounded-lg mr-10">
-              <button className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => navigateTo("/swapp-skills/myAcount")}>
+              <button className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => navigateTo("/swapp-skills/myAccount")}>
                 My Account
               </button>
               <hr />
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => alert("Logout")}>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
                 Log-out
               </li>
             </ul>

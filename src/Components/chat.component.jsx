@@ -6,14 +6,16 @@ const ChatComponent = ({ userId, chatUserId }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    webSocketService.connect((newMessage) => {
+    const handleMessage = (newMessage) => {
       if (
         (newMessage.sender.uid === userId && newMessage.receiver.uid === chatUserId) ||
         (newMessage.sender.uid === chatUserId && newMessage.receiver.uid === userId)
       ) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
-    });
+    };
+
+    webSocketService.connect(handleMessage);
 
     return () => {
       webSocketService.disconnect();
@@ -23,6 +25,10 @@ const ChatComponent = ({ userId, chatUserId }) => {
   const sendMessage = () => {
     if (message.trim() !== '') {
       webSocketService.sendMessage(userId, chatUserId, message);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: { uid: userId }, receiver: { uid: chatUserId }, content: message, timestamp: new Date() },
+      ]);
       setMessage('');
     }
   };

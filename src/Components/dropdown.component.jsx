@@ -7,7 +7,6 @@ const Dropdown = ({ options, onChange }) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // Only clear selected options if none of the current options are in the selected options
     if (selectedOptions.length > 0 && !options.some(option => selectedOptions.includes(option))) {
       setSelectedOptions([]);
     }
@@ -57,7 +56,7 @@ const Dropdown = ({ options, onChange }) => {
         <div className="flex flex-col items-center relative">
           <div className="w-full">
             <div
-              className="my-2 p-1 flex border border-gray-600 cursor-pointer"
+              className="my-2 p-1 flex border border-gray-600 cursor-pointer flex-wrap"
               onClick={toggleDropdown}
               aria-expanded={isOpen}
               role="button"
@@ -100,7 +99,7 @@ const Dropdown = ({ options, onChange }) => {
           </div>
 
           {isOpen && (
-            <div className="absolute mt-20 bg-white shadow w-full max-h-select z-10 rounded">
+            <div className="absolute mt-36 bg-white shadow w-full max-h-select z-10 rounded">
               <div className="flex flex-col w-full overflow-y-auto h-64">
                 {options.map((option, index) => (
                   <div

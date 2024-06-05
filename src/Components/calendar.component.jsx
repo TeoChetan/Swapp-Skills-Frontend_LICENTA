@@ -30,7 +30,7 @@ export const CalendarComponent = ({ value, onChange }) => {
     const typedDate = event.target.value;
     setInputValue(typedDate);
 
-    if (typedDate) {
+    if (typedDate.length === 10) {
       const parsedDate = parse(typedDate, "dd-MM-yyyy", new Date());
       if (isValid(parsedDate)) {
         setViewMonth(parsedDate);
@@ -40,9 +40,6 @@ export const CalendarComponent = ({ value, onChange }) => {
         setDate(undefined);
         onChange(undefined);
       }
-    } else {
-      setDate(undefined);
-      onChange(undefined);
     }
   }, [onChange]);
 
@@ -118,4 +115,4 @@ export const CalendarComponent = ({ value, onChange }) => {
       </div>
     </div>
   );
-}
+};

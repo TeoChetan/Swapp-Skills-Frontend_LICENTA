@@ -8,8 +8,8 @@ class WebSocketService {
   }
 
   connect(callback) {
-    const socket = new SockJS('http://localhost:8080/ws');
-    this.client = Stomp.over(socket);
+    const createSocket = () => new SockJS('http://localhost:8080/ws');
+    this.client = Stomp.over(createSocket);
 
     this.client.connect({}, frame => {
       console.log('Connected: ' + frame);
@@ -31,7 +31,7 @@ class WebSocketService {
 
   disconnect() {
     if (this.client) {
-      this.client.disconnect(() => {
+      this.client.deactivate(() => {
         console.log('Disconnected');
       });
     }
@@ -55,7 +55,7 @@ class WebSocketService {
         receiver: { uid: receiverId },
         content,
       };
-      this.client.send('/app/chat', {}, JSON.stringify(message));
+      this.client.publish({ destination: '/app/chat', body: JSON.stringify(message) });
     } else {
       console.error('Cannot send message, client is not connected');
     }
