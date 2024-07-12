@@ -10,6 +10,7 @@
   } from "firebase/auth";
 import {toast} from 'react-toastify'
 import { useState,useEffect,useContext,createContext } from "react";
+import { useNavigate } from "react-router-dom";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCQRtyQ6iOxuM9A_ecJaqINRh5b0mE0zZs",
@@ -142,11 +143,12 @@ export const useCSRFToken = () => useContext(CSRFTokenContext);
     return userCredential;
   };
 
-  export const createUserWithGoogleAuth = async () => {
+  export const createUserWithGoogleAuth = async (naviagate) => {
     try{
       const { user } = await signInWithGooglePopup();
       await createUserDocumentFromAuth(user);
       console.log("user created succesfully", user);
+      naviagate("dashboard")
     }catch(error){
       console.log("User already exists. Please Sign In!",error);
     }

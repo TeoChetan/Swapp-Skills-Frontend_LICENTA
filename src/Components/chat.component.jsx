@@ -7,6 +7,7 @@ const ChatComponent = ({ userId, chatUserId }) => {
 
   useEffect(() => {
     const handleMessage = (newMessage) => {
+      // Add the new message to the state only if it's relevant to the current chat
       if (
         (newMessage.sender.uid === userId && newMessage.receiver.uid === chatUserId) ||
         (newMessage.sender.uid === chatUserId && newMessage.receiver.uid === userId)
@@ -15,8 +16,10 @@ const ChatComponent = ({ userId, chatUserId }) => {
       }
     };
 
+    // Connect to WebSocket and subscribe to messages
     webSocketService.connect(handleMessage);
 
+    // Cleanup on unmount
     return () => {
       webSocketService.disconnect();
     };
@@ -25,11 +28,7 @@ const ChatComponent = ({ userId, chatUserId }) => {
   const sendMessage = () => {
     if (message.trim() !== '') {
       webSocketService.sendMessage(userId, chatUserId, message);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: { uid: userId }, receiver: { uid: chatUserId }, content: message, timestamp: new Date() },
-      ]);
-      setMessage('');
+      setMessage(''); // Clear the input field without adding the message to state here
     }
   };
 

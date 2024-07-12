@@ -113,7 +113,7 @@ const SignUpForm = () => {
     <div className="sign-up-container text-xl p-20 pt-5">
       {isSendingVerificationSent && <Spinner />}
       <span className="text-sm flex justify-center ">
-        Sign-up with email and password
+        Register with email and password
       </span>
       <form onSubmit={handleSubmit}>
         <ToastContainer />
@@ -163,7 +163,7 @@ const SignUpForm = () => {
           }}
         />
         <div className="flex flex-col items-center justify-between ">
-          <Button>Sign-up</Button>
+          <Button>Register</Button>
         </div>
       </form>
     </div>

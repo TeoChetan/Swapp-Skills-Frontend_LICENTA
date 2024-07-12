@@ -1,0 +1,53 @@
+@startuml
+start
+
+: User Visits Home Page;
+if (User is Registered?) then (no)
+    :Show App's Welcome Page;
+    :Prompt User to Register or Log In;
+    if (User Chooses to Register) then (yes)
+        :User Registers;
+    else (User Chooses to Log In)
+        :User Logs In;
+    endif
+else (yes)
+    :User Logs In;
+endif
+
+if (User has Inserted Personal Details?) then (no)
+    :Prompt User to Insert Personal Details;
+    :User Inserts Personal Details;
+    :Account is Created;
+endif
+
+:Show Main Page;
+
+if (User Wants to Update Own Details?) then (yes)
+    :Open Update Details Form;
+    :User Updates Personal Details;
+endif
+
+if (User Wants to View Map?) then (yes)
+    :Show Map with Users Around;
+endif
+
+if (User Wants to View User Profiles?) then (yes)
+    :Show User Profile;
+endif
+
+if (User Wants to Add Users to Favorites?) then (yes)
+    :Add User to Favorites;
+endif
+
+if (User Wants to Chat with Users?) then (yes)
+    :Open Chat Interface;
+    :User Chats with Other Users;
+endif
+
+if (User Wants to Send Feedback Email?) then (yes)
+    :Open Feedback Email Form;
+    :User Sends Feedback Email to App Team;
+endif
+
+stop
+@enduml

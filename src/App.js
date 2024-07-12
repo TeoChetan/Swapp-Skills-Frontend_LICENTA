@@ -16,6 +16,7 @@ import UserProfilePage from "./Pages/UserProfilePage/userProfilePage.component";
 import UsersOnMap from "./Pages/MapPage/usersOnMap.component";
 import FavoritesPage from "./Pages/FavouritePage/FavouritePage";
 import { FavoritesProvider } from './Components/favorites.context';
+import ForgotPasswordPage from './Authentification/forgot-password/forgot-password.component';
 const App = () => {
   return (
     <FavoritesProvider>
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="signin" element={<SignInPage />} />
+            <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
             <Route path="/dashboard" element={<MultiStepContainer />} />
             <Route path="/swapp-skills" element={<Layout><MainPage /></Layout>} />
             <Route path="/swapp-skills/aboutUs" element={<Layout><AboutUsPage /></Layout>} />
@@ -35,6 +37,7 @@ const App = () => {
             <Route path="/profile/:userId" element={<Layout><UserProfilePage /></Layout>} />
             <Route path="/usersOnMap" element={<Layout><UsersOnMap /></Layout>} />
             <Route path="/favorites" element={<Layout><FavoritesPage /></Layout>} />
+
           </Routes>
     </CSRFTokenProvider>
     </FavoritesProvider>

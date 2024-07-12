@@ -125,15 +125,16 @@ const MessagesPage = () => {
 
     fetchChatUser();
 
-    webSocketService.connect((newMessage) => {
-      console.log('New message received:', newMessage);
+    const handleMessage = (newMessage) => {
       if (
         (newMessage.sender.uid === currentUserId && newMessage.receiver.uid === chatUserId) ||
         (newMessage.sender.uid === chatUserId && newMessage.receiver.uid === currentUserId)
       ) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
-    });
+    };
+
+    webSocketService.connect(handleMessage);
 
     return () => {
       webSocketService.disconnect();
@@ -143,11 +144,7 @@ const MessagesPage = () => {
   const sendMessage = () => {
     if (message.trim() !== '') {
       webSocketService.sendMessage(currentUserId, chatUserId, message);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: { uid: currentUserId }, receiver: { uid: chatUserId }, content: message, timestamp: new Date() },
-      ]);
-      setMessage('');
+      setMessage(''); // Clear the input field without adding the message to state here
     }
   };
 

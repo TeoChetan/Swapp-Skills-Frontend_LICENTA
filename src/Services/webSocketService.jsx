@@ -8,8 +8,8 @@ class WebSocketService {
   }
 
   connect(callback) {
-    const createSocket = () => new SockJS('http://localhost:8080/ws');
-    this.client = Stomp.over(createSocket);
+    const socket = new SockJS('http://localhost:8080/ws');
+    this.client = Stomp.over(socket);
 
     this.client.connect({}, frame => {
       console.log('Connected: ' + frame);
@@ -31,7 +31,11 @@ class WebSocketService {
 
   disconnect() {
     if (this.client) {
-      this.client.deactivate(() => {
+      Object.keys(this.subscriptions).forEach(topic => {
+        this.subscriptions[topic].unsubscribe();
+        delete this.subscriptions[topic];
+      });
+      this.client.disconnect(() => {
         console.log('Disconnected');
       });
     }
@@ -39,10 +43,15 @@ class WebSocketService {
 
   subscribeToTopic(topic, callback) {
     if (this.client && this.client.connected) {
-      this.subscriptions[topic] = this.client.subscribe(topic, message => {
-        const parsedMessage = JSON.parse(message.body);
-        callback(parsedMessage);
-      });
+      if (!this.subscriptions[topic]) {
+        this.subscriptions[topic] = this.client.subscribe(topic, message => {
+          const parsedMessage = JSON.parse(message.body);
+          callback(parsedMessage);
+        });
+        console.log(`Subscribed to topic: ${topic}`);
+      } else {
+        console.log(`Already subscribed to topic: ${topic}`);
+      }
     } else {
       console.error('Cannot subscribe, client is not connected');
     }
@@ -55,7 +64,7 @@ class WebSocketService {
         receiver: { uid: receiverId },
         content,
       };
-      this.client.publish({ destination: '/app/chat', body: JSON.stringify(message) });
+      this.client.send('/app/chat', {}, JSON.stringify(message));
     } else {
       console.error('Cannot send message, client is not connected');
     }

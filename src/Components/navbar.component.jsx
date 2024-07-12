@@ -3,6 +3,9 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import Hamburger from "./hamburger.component";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as HomeLogo } from "../Assets/crown.svg";
+import {
+  AiOutlineHeart,
+} from 'react-icons/ai';
 
 const pages = [
   { name: "Home", path: "/swapp-skills" },
@@ -61,7 +64,7 @@ const Navbar = () => {
     signOut(auth)
       .then(() => {
         console.log("User signed out.");
-        navigate("/"); // Redirect to the login page after logout
+        navigate("/"); 
       })
       .catch((error) => {
         console.error("Error signing out:", error);
@@ -81,21 +84,10 @@ const Navbar = () => {
           </ul>
         </nav>
         <div className="flex items-center">
-          <svg
-            onClick={() => alert("Notifications!")}
-            className="cursor-pointer mr-4"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            stroke="#fff"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
+        <AiOutlineHeart className="text-4xl text-white mr-4 hover:text-red-500 cursor-pointer" 
+        onClick={() => navigate("/favorites")}
+        />
+        
           <div className="relative flex items-center cursor-pointer" onClick={toggleDropdown}>
             <img
               src={user ? user.profilePictureUrl : "defaultProfilePic.png"}

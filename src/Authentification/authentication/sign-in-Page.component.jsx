@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {ReactComponent as GoogleLogo} from "../../Assets/google.svg"
 import Button from "../../Components/button.component";
 import {handleSignUpWithGoogle} from "../../utils/firebase.utils"
 import SignInForm from "../sign-in-form/sign-in-form.component";
 
 const SignInPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-polar-sky flex justify-center h-full min-h-screen">
       <div className="authenticate-form bg-white flex flex-col lg:flex-row text-blue-nova rounded-xl w-full lg:w-4/6 lg:m-10 max-w-4xl m-auto lg:max-h-[700px] shadow-2xl ring-black ring-opacity-50 ">
@@ -12,9 +13,9 @@ const SignInPage = () => {
           <h1 className="text-center font-bold text-xl sm:text-2xl lg:text-4xl mb-2 lg:mb-5">
             Sign into account
           </h1>
-          <Button onClick={handleSignUpWithGoogle} >
+          <Button onClick={()=>handleSignUpWithGoogle(navigate) } >
           <GoogleLogo className="w-10 h-10 "></GoogleLogo>
-          <p className="m-2 text-black ">Sign-in with Google</p>
+          <p className="m-2 text-black ">Sign-up with Google</p>
           </Button>
             <SignInForm/>
           </div>
@@ -24,7 +25,8 @@ const SignInPage = () => {
           </h1>
           <p className="text-white max-w-md text-base lg:text-lg">
              Your journey continues here. Enter your credentials to access your account and explore THE world of SWAPP SKILLS</p>
-          <Link className="text-white hover:text-gray-200 border border-polar-sky hover:border-white hover:scale-110 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-2xl text-sm text-center mt-5 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 px-10 py-2" to="/signup">Sign-up</Link>
+             <span className="text-gray-400 mt-10">You don't have an account?</span>
+          <Link className="text-white hover:text-gray-200 border border-polar-sky hover:border-white hover:scale-110 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-2xl text-sm text-center mt-5 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 px-10 py-2" to="/signup">Register</Link>
         </div>
       </div>
     </div>

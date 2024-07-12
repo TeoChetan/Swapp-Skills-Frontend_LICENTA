@@ -34,7 +34,7 @@ const UsersOnMap = () => {
           },
           {
             enableHighAccuracy: true,
-            timeout: 15000, // Increased timeout duration
+            timeout: 15000, 
             maximumAge: 0,
           }
         );
@@ -46,7 +46,7 @@ const UsersOnMap = () => {
           },
           {
             enableHighAccuracy: true,
-            timeout: 15000, // Increased timeout duration
+            timeout: 15000, 
             maximumAge: 0,
           }
         );

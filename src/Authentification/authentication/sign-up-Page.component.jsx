@@ -19,6 +19,7 @@ const SignupPage = () => {
           <p className="text-white max-w-md text-base lg:text-lg">
             Enter your personal details and start your journey with SWAPP SKILLS
           </p>
+          <span className="text-gray-400 mt-10">You already have an account?</span>
 
           <Link className="text-white hover:text-gray-200 border border-polar-sky hover:border-white hover:scale-110 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-2xl text-sm text-center mt-5 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 px-10 py-2" to="/signin">Sign-in</Link>
 
